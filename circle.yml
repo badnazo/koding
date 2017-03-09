@@ -201,3 +201,14 @@ stages:
         name: codecov
         command: |
           [[ -n "$CODECOV_TOKEN" ]] && bash <(curl --silent https://codecov.io/bash) -X gcov -X fix || exit 0
+
+      - type: shell
+        name: deployment
+        environment:
+          BRANCH: $CIRCLE_BRANCH
+        command: |
+          export BRANCH VERSION_LABEL
+          case "$BRANCH" in
+            sandbox | latest | production ) scripts/ci/deploy ;;
+            * ) exit 0 ;;
+          esac
